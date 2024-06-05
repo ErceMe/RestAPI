@@ -1,4 +1,4 @@
-package controller
+package config
 
 import (
 	"REST_API/entities"
@@ -25,14 +25,19 @@ func DBConnect() {
 	host := os.Getenv("dbHost")
 	user := os.Getenv("dbUser")
 	password := os.Getenv("dbPassword")
-	dbport := os.Getenv("3306")
-	dbname := os.Getenv("order_assignment")
+	dbport := os.Getenv("dbPort")
+	dbname := os.Getenv("dbName")
 
 	config := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, password, host, dbport, dbname)
+	fmt.Println(config)
 	db, err = gorm.Open(mysql.Open(config), &gorm.Config{})
 	if err != nil {
 		log.Fatal("error connecting to database: ", err)
 	}
 
-	db.Debug().AutoMigrate(entities.Item{}, entities.Order{})
+	db.AutoMigrate(&entities.Order{}, &entities.Item{})
+}
+
+func GetDB() *gorm.DB {
+	return db
 }

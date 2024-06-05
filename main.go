@@ -1,9 +1,12 @@
 package main
 
-import "REST_API/router"
+import (
+	"REST_API/config"
+	"REST_API/router"
+)
 
 func main() {
-	PORT := "8080"
-
+	config.DBConnect()
+	PORT := ":8080"
 	router.StartServer().Run(PORT)
 }
