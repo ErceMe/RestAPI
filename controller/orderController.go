@@ -73,7 +73,9 @@ func DeleteOrder(ctx *gin.Context) {
 	id := ctx.Param("id")
 	err := config.GetDB().Where("id = ?", id).Delete(&orders).Error
 	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Failed to Delete"})
 		fmt.Println("Error deleting data", err.Error())
+		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Deleted Data!!!"})
