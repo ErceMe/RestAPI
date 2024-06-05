@@ -19,17 +19,17 @@ func CreateOrder(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 	}
 
-	err := config.GetDB().Create(&orders).Preload("items")
+	err := config.GetDB().Create(&orders).Preload("Items")
 	if err != nil {
 		fmt.Println("Error creating Data!!!!")
 	}
-	ctx.JSON(http.StatusOK, gin.H{"orders": orders, "items": items})
+	ctx.JSON(http.StatusOK, gin.H{"orders": orders, "Items": items})
 }
 
 func GetAllOrder(ctx *gin.Context) {
 	var orders []entities.Order
 
-	config.GetDB().Preload("items").Find(&orders)
+	config.GetDB().Preload("Items").Find(&orders)
 	ctx.JSON(http.StatusOK, gin.H{"orders": orders})
 }
 
@@ -37,7 +37,7 @@ func GetOrderByID(ctx *gin.Context) {
 	var order entities.Order
 	id := ctx.Param("id")
 
-	if err := config.GetDB().Preload("items").First(&order, id).Error; err != nil {
+	if err := config.GetDB().Preload("Items").First(&order, id).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Data tidak ditemukan"})
@@ -71,6 +71,7 @@ func UpdateOrder(ctx *gin.Context) {
 func DeleteOrder(ctx *gin.Context) {
 	var orders entities.Order
 	id := ctx.Param("id")
+	config.GetDB().Model(&orders).Association("Items")
 	err := config.GetDB().Where("id = ?", id).Delete(&orders).Error
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Failed to Delete"})
