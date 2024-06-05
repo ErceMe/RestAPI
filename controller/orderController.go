@@ -14,15 +14,12 @@ func CreateOrder(ctx *gin.Context) {
 	var orders entities.Order
 	var items entities.Item
 
-	fmt.Println(orders)
 	if err := ctx.ShouldBindJSON(&orders); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 	}
 
-	err := config.GetDB().Create(&orders).Preload("Items")
-	if err != nil {
-		fmt.Println("Error creating Data!!!!")
-	}
+	config.GetDB().Create(&orders).Preload("Items")
+
 	ctx.JSON(http.StatusOK, gin.H{"orders": orders, "Items": items})
 }
 
