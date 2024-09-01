@@ -12,7 +12,6 @@ import (
 
 func CreateOrder(ctx *gin.Context) {
 	var orders entities.Order
-	var items entities.Item
 
 	if err := ctx.ShouldBindJSON(&orders); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
@@ -20,7 +19,7 @@ func CreateOrder(ctx *gin.Context) {
 
 	config.GetDB().Create(&orders).Preload("Items")
 
-	ctx.JSON(http.StatusOK, gin.H{"orders": orders, "Items": items})
+	ctx.JSON(http.StatusOK, gin.H{"orders": orders})
 }
 
 func GetAllOrder(ctx *gin.Context) {
@@ -50,6 +49,7 @@ func GetOrderByID(ctx *gin.Context) {
 
 func UpdateOrder(ctx *gin.Context) {
 	var orders entities.Order
+	var items entities.Item
 	// var items entities.Item
 
 	id := ctx.Param("id")
@@ -57,10 +57,10 @@ func UpdateOrder(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 	}
 
-	if config.GetDB().Model(&orders).Where("id = ?", id).Updates(&orders).RowsAffected == 0 {
-		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Data tidak ditemukan"})
-		return
-	}
+	// if config.GetDB().Preload("Items").Where("id = ?", id).Updates(&orders).Updates(&items).RowsAffected == 0 {
+	// 	ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Data tidak ditemukan"})
+	// 	return
+	// }
 
 	ctx.JSON(http.StatusOK, gin.H{"orders": orders})
 }
